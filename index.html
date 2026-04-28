@@ -19,7 +19,7 @@
   --r:8px;--rl:12px;
   --font:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
 }
-body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh;min-width:1882px}
 
 /* ─── editable spans ─── */
 [contenteditable]{outline:none;border-radius:3px;transition:background .12s,outline .12s}
@@ -102,13 +102,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 
 /* ─── Project content: unified phase rows ─── */
 .proj-content-wrap{position:relative}
-.proj-scroll-rail{
-  overflow-x:auto;overflow-y:hidden;height:12px;
-  border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);background:var(--sur3);
-  padding:0
-}
-.proj-scroll-rail-inner{height:1px}
-.proj-content{border-top:1px solid var(--bd);overflow-x:auto}
+.proj-content{border-top:1px solid var(--bd)}
 
 /* Column header row */
 .proj-col-hd{
@@ -146,7 +140,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 
 /* Right: task cell — takes remaining space */
 .pur-right{
-  flex:1;min-width:max-content;display:flex;flex-direction:column
+  flex:1;min-width:0;display:flex;flex-direction:column
 }
 .pur-task-rows{flex:1}
 .pur-add-wrap{border-top:1px dashed var(--bd2)}
@@ -202,7 +196,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .col-person{width:110px}
 .col-due   {width:64px}
 .col-status{width:98px;display:flex;align-items:flex-start;padding-top:7px}
-.col-act   {flex-grow: 1;width: auto;display: flex;justify-content: flex-start;padding-left: 8px}
+.col-act   {width:375px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-start;padding-left:8px;padding-right:12px}
 .tp-row{
   display:flex;border-bottom:1px solid var(--bd);transition:background .1s;
   align-items:stretch;width:100%
@@ -219,7 +213,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .tp-cell.col-detail{font-size:12px;color:#1a6ef5;display: flex;align-items: center;}
 .tp-cell.col-due{font-size:12px;display: flex;align-items: center;justify-content: center;}
 .tp-cell.col-person{font-size:12px;display: flex;align-items: center;justify-content: center;}
-.tp-cell.col-act{flex-grow: 1;width: auto;display: flex;justify-content: flex-start;padding-left: 8px}
+.tp-cell.col-act{width:375px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-start;padding-left:8px;padding-right:12px}
 
 /* Person tags */
 .ptag{display:inline-flex;align-items:center;gap:2px;font-size:12px;padding:4px 12px;border-radius:20px;background:var(--sur2);color:var(--tx2);margin:1px}
@@ -273,7 +267,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 }
 .new-task-row textarea{font-size:12px;min-height:38px;resize:none}
 .new-task-row .tp-cell{align-items:flex-start;display:flex;flex-direction:column;justify-content:flex-start;gap:3px}
-.btn-ok{font-family:var(--font);font-size:12px;padding:4px 10px;border-radius:var(--r);
+.btn-ok{font-family:var(--font);font-size:12px;padding:4px 10px;border-radius:var(--r);white-space:nowrap;min-width:80px;
   border:1px solid var(--green-bd);background:var(--green-bg);color:var(--green-tx);cursor:pointer}
 .btn-ok:hover{filter:brightness(.95)}
 .btn-cxl{font-family:var(--font);font-size:12px;padding:4px 8px;border-radius:var(--r);
@@ -2834,8 +2828,7 @@ function renderAll(){
   </div>`;
 
   sec.innerHTML=html;
-  setTimeout(attachScrollRails, 0);
-}
+  }
 
 /* ─── Admin table (simple, no timeline) ─── */
 function renderAdminTable(tasks){
@@ -3170,7 +3163,7 @@ function _push(){
 _ref.on("value", snap => {
   if(_ignoreNext){ _ignoreNext = false; return; }
   const d = snap.val();
-  if(!d){ _syncDot("ok"); if(!_fbReady){ _fbReady=true; renderAll(); setTimeout(attachScrollRails,0); } return; }
+  if(!d){ _syncDot("ok"); if(!_fbReady){ _fbReady=true; renderAll();  } return; }
   if(d.TASKS)    TASKS    = d.TASKS;
   if(d.DSTATUS)  DSTATUS  = d.DSTATUS;
   if(d.PROJECTS) PROJECTS = d.PROJECTS;
@@ -3178,7 +3171,7 @@ _ref.on("value", snap => {
   if(d.meta) { const el=document.getElementById("hd-meta");  if(el&&document.activeElement!==el) el.innerText=d.meta; }
   nextId = Math.max(300, ...TASKS.map(t=>t.id+1));
   _syncDot("ok");
-  if(!_fbReady){ _fbReady=true; renderAll(); setTimeout(attachScrollRails,0); }
+  if(!_fbReady){ _fbReady=true; renderAll();  }
   else { renderAll(); }
 });
 
@@ -3189,41 +3182,7 @@ _db.ref(".info/connected").on("value", s=>{ if(!s.val()) _syncDot("offline"); })
 function saveToLocal(){ _push(); }
 
 /* ─── Sync scroll rails ─── */
-function attachScrollRails(){
-  document.querySelectorAll(".proj-content").forEach(content=>{
-    const wrap = content.parentElement;
-    if(wrap.classList.contains("proj-content-wrap")) return; /* already done */
-    /* wrap */
-    const w = document.createElement("div");
-    w.className = "proj-content-wrap";
-    content.parentNode.insertBefore(w, content);
-    w.appendChild(content);
-    /* rail above */
-    const rail = document.createElement("div");
-    rail.className = "proj-scroll-rail";
-    const inner = document.createElement("div");
-    inner.className = "proj-scroll-rail-inner";
-    rail.appendChild(inner);
-    w.insertBefore(rail, content);
-    /* sync widths & scroll */
-    function syncWidth(){
-      inner.style.width = content.scrollWidth + "px";
-    }
-    syncWidth();
-    new ResizeObserver(syncWidth).observe(content);
-    let syncing = false;
-    rail.addEventListener("scroll", ()=>{
-      if(syncing) return; syncing=true;
-      content.scrollLeft = rail.scrollLeft;
-      syncing=false;
-    });
-    content.addEventListener("scroll", ()=>{
-      if(syncing) return; syncing=true;
-      rail.scrollLeft = content.scrollLeft;
-      syncing=false;
-    });
-  });
-}
+/* scroll rails removed */
 
 /* Firebase REF.on("value") handles initial render — no manual renderAll here */
 _syncDot("loading");
