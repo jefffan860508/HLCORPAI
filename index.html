@@ -163,7 +163,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .ph-num-badge{font-size:10px;font-weight:700;width:14px;text-align:center;flex-shrink:0;padding-top:3px}
 
 /* Deliverable chips */
-.deliv-chip{display:flex;align-items:center;gap:4px;margin-bottom:2px}
+.deliv-chip{display:flex;align-items:center;gap:4px;margin-bottom:2px;position:relative}
+.deliv-chip .role-icon{cursor:pointer;transition:transform .15s}
+.deliv-chip .role-icon:hover{transform:scale(1.25)}
+.deliv-popup{
+  display:none;position:absolute;left:18px;top:0;z-index:50;
+  background:var(--sur);border:1px solid var(--bd2);border-radius:var(--r);
+  box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;min-width:90px
+}
+.deliv-popup.show{display:block}
+.deliv-subhd.filter-hidden{display:none!important}
+.deliv-popup-opt{
+  padding:6px 12px;font-size:12px;cursor:pointer;color:var(--tx2);
+  display:flex;align-items:center;gap:6px;white-space:nowrap
+}
+.deliv-popup-opt:hover{background:var(--sur2)}
+.deliv-popup-opt.active{font-weight:600;color:var(--tx)}
 .role-icon{
   width:13px;height:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
   font-size:8px;font-weight:700;border-radius:2px
@@ -176,7 +191,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .di-wip  .role-icon{background:#e8b040;color:#fff}
 .di-todo .role-icon{background:#dddbd6;color:var(--tx3)}
 .deliv-name{font-size:10px;color:var(--tx2);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.di-done .deliv-name{color:var(--tx3);text-decoration:line-through}
+.di-done .deliv-name{color:var(--tx3)}
 .tp-row .role-icon{background:#c8c8c8!important;color:#fff!important}
 /* task row role icons: always grey, no colour */
 .tp-row .role-icon{background:#cccccc!important;color:#fff!important}
@@ -2885,8 +2900,17 @@ function renderProjContent(proj, ci){
     delivs.forEach(d=>{
       const ds=DSTATUS[dKey(proj.id,d.id)]||"待辦";
       const roleArr=d.roles||[d.role];
-      const iconsHtml=roleArr.map(r=>`<div class="role-icon ${roleIconCls(r)}"></div>`).join("");
-      h+=`<div class="deliv-chip ${diCls(ds)}">${iconsHtml}<span class="deliv-name">${d.label}</span></div>`;
+      const iconsHtml=roleArr.map(r=>`<div class="role-icon ${roleIconCls(r)}" onclick="toggleDelivPopup(this,'${proj.id}','${d.id}')" title="點擊切換狀態"></div>`).join("");
+      const dotColor = ds==="完成"?"#3aaa88":ds==="進行中"?"#e8b040":"#bbb";
+      const popupHtml=`<div class="deliv-popup">
+        <div class="deliv-popup-opt ${ds==="待辦"?"active":""}" onclick="setDelivStatus('${proj.id}','${d.id}','待辦',this)">
+          <span style="width:8px;height:8px;border-radius:50%;background:#bbb;display:inline-block;flex-shrink:0"></span>待辦</div>
+        <div class="deliv-popup-opt ${ds==="進行中"?"active":""}" onclick="setDelivStatus('${proj.id}','${d.id}','進行中',this)">
+          <span style="width:8px;height:8px;border-radius:50%;background:#e8b040;display:inline-block;flex-shrink:0"></span>進行中</div>
+        <div class="deliv-popup-opt ${ds==="完成"?"active":""}" onclick="setDelivStatus('${proj.id}','${d.id}','完成',this)">
+          <span style="width:8px;height:8px;border-radius:50%;background:#3aaa88;display:inline-block;flex-shrink:0"></span>完成</div>
+      </div>`;
+      h+=`<div class="deliv-chip ${diCls(ds)}">${iconsHtml}${popupHtml}<span class="deliv-name">${d.label}</span></div>`;
     });
     if(!delivs.length) h+=`<span style="font-size:10px;color:var(--tx3)">—</span>`;
 
@@ -2895,63 +2919,12 @@ function renderProjContent(proj, ci){
     /* ── RIGHT ── */
     h+=`<div class="pur-right"><div class="pur-task-rows">`;
 
-    if(delivs.length){
-      /* For each deliverable: sub-header + its tasks + add button */
-      delivs.forEach(d=>{
-        const ds=DSTATUS[dKey(proj.id,d.id)]||"待辦";
-        const dTasks=TASKS.filter(t=>t.proj===proj.id&&t.phase===ph.id&&t.delivId===d.id&&taskVisible(t));
-        const addId=`new-${proj.id}-${ph.id}-${d.id}`;
-        const dsCl=dsCls(ds);
+    /* All tasks for this phase (regardless of delivId) */
+    const allPhTasks=TASKS.filter(t=>t.proj===proj.id&&t.phase===ph.id&&taskVisible(t));
+    allPhTasks.forEach(t=>{ h+=taskRowHTML(t); });
 
-        /* Sub-header row — hide entirely if filters active and no visible tasks */
-        const droleArr=d.roles||[d.role];
-        const dicons=droleArr.map(r=>`<div class="deliv-subhd-icon ${roleIconCls(r)}"></div>`).join("");
-        const filtersOn=!!(activeFilters.proj||activeFilters.person||activeFilters.status||activeFilters.search);
-        if(filtersOn && !dTasks.length) {
-          /* skip this entire deliverable block when filtering and no matching tasks */
-          h+=`<div id="${addId}"></div>`;
-        } else {
-          h+=`<div class="deliv-subhd">
-          ${dicons}
-          <span class="deliv-subhd-label">${d.label}</span>
-          <div class="deliv-subhd-status">
-            <select class="ssel ${dsCl}" style="font-size:11px;padding:2px 5px;width:auto;height:24px" onchange="updateDStatus(this,'${proj.id}','${d.id}')">
-              <option value="待辦"   ${ds==="待辦"  ?"selected":""}>待辦</option>
-              <option value="進行中" ${ds==="進行中"?"selected":""}>進行中</option>
-              <option value="完成"   ${ds==="完成"  ?"selected":""}>完成</option>
-            </select>
-          </div>
-          <button class="btn-subhd-add" onclick="event.stopPropagation();showAddRow('${proj.id}','${ph.id}','${addId}','${d.id}')">＋ 新增</button>
-
-        </div>`;
-
-          /* Tasks under this deliverable — only render if there are tasks */
-          dTasks.forEach(t=>{ h+=taskRowHTML(t); });
-
-          /* Inline add container */
-          h+=`<div id="${addId}"></div>`;
-        }
-      });
-
-      /* Also tasks that belong to this phase but no delivId (legacy/general) */
-      const genTasks=TASKS.filter(t=>t.proj===proj.id&&t.phase===ph.id&&!t.delivId&&taskVisible(t));
-      if(genTasks.length){
-        genTasks.forEach(t=>{ h+=taskRowHTML(t); });
-      }
-    } else {
-      /* No deliverables — just tasks directly */
-      const phTasks=TASKS.filter(t=>
-        t.proj===proj.id &&
-        t.phase===ph.id &&
-        taskVisible(t)
-      );
-
-      if(phTasks.length){
-        phTasks.forEach(t=>{ h+=taskRowHTML(t); });
-      }
-
-}
-
+    const addBtnId=`new-${proj.id}-${ph.id}-gen`;
+    h+=`<div class="pur-add-wrap"><button class="btn-add-task" onclick="showAddRow('${proj.id}','${ph.id}','${addBtnId}','')">＋ 新增作業</button><div id="${addBtnId}"></div></div>`;
     h+=`</div></div>`;/* pur-task-rows / pur-right */
     h+=`</div>`;/* phase-unified-row */
   });
@@ -3254,6 +3227,32 @@ function attachScrollRails(){
 
 /* Firebase REF.on("value") handles initial render — no manual renderAll here */
 _syncDot("loading");
+
+
+/* ─── Deliverable status popup (left panel icons) ─── */
+function toggleDelivPopup(el, projId, delivId){
+  /* Close any other open popups first */
+  document.querySelectorAll(".deliv-popup.show").forEach(p=>{
+    if(p!==el.nextElementSibling) p.classList.remove("show");
+  });
+  const popup = el.nextElementSibling;
+  if(popup && popup.classList.contains("deliv-popup")){
+    popup.classList.toggle("show");
+  }
+}
+function setDelivStatus(projId, delivId, val, el){
+  DSTATUS[dKey(projId,delivId)] = val;
+  /* Close popup */
+  document.querySelectorAll(".deliv-popup.show").forEach(p=>p.classList.remove("show"));
+  _push();
+  renderAll();
+  setTimeout(applySubhdFilter, 50);
+}
+document.addEventListener("click", function(e){
+  if(!e.target.closest(".deliv-chip")){
+    document.querySelectorAll(".deliv-popup.show").forEach(p=>p.classList.remove("show"));
+  }
+});
 
 </script>
 
