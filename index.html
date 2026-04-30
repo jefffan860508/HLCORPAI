@@ -19,7 +19,7 @@
   --r:8px;--rl:12px;
   --font:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
 }
-body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh;min-width:1565px}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh;min-width:1345px;zoom:1.2}
 
 /* ─── editable spans ─── */
 [contenteditable]{outline:none;border-radius:3px;transition:background .12s,outline .12s}
@@ -191,8 +191,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .tp-row .role-icon{background:#cccccc!important;color:#fff!important}
 
 /* Column widths (used in both header and task rows) */
-.col-task  {width:450px}
-.col-detail{width:400px}
+.col-task  {width:380px}
+.col-detail{width:250px}
 .col-person{width:102px}
 .col-due   {width:60px}
 .col-status{width:98px;display:flex;align-items:flex-start;padding-top:7px}
@@ -2402,21 +2402,21 @@ const PHASE_DELIVS = {
        {id:"p6c",role:"eng",   label:"模具試產品質驗證報告書"},
        {id:"p6d",role:"eng",   label:"量產用工程圖"},
        {id:"p6e",role:"design",label:"成品點檢標準"}],
-  P7: [{id:"p7a",role:"pm",    label:"組裝流程說明書"},
-       {id:"p7b",role:"pm",    label:"製造命令"},
-       {id:"p7c",role:"design",label:"量產用工程圖列管"},
+  P7: [{id:"p7a",role:"pm",    label:"組裝流程說明書📃"},
+       {id:"p7b",role:"pm",    label:"製造命令📃"},
+       {id:"p7c",role:"design",label:"量產用工程圖列管📃"},
        {id:"p7d",role:"design",label:"量產用3D圖列管"}],
-  P8: [{id:"p8a",role:"pm",    label:"模具與成品報價單"},
+  P8: [{id:"p8a",role:"pm",    label:"模具與成品報價單📃"},
        {id:"p8b",role:"pm",    label:"報價評比彙整"},
        {id:"p8c",role:"review",label:"報價單簽核與回傳"}],
-  P10:[{id:"p10a",roles:["design","eng"],label:"驗證製造商量化用檢具"},
-       {id:"p10b",role:"pm",   label:"量產用零件清單"},
-       {id:"p10c",role:"pm",   label:"量產用BOM"},
+  P10:[{id:"p10a",roles:["design","eng"],label:"驗證製造商量化用檢具📃"},
+       {id:"p10b",role:"pm",   label:"量產用零件清單📃"},
+       {id:"p10c",role:"pm",   label:"量產用BOM📃"},
        {id:"p10d",role:"pm",   label:"模具進度管理"},
-       {id:"p10e",role:"design",label:"模具及加工成品限樣建立"}],
+       {id:"p10e",role:"design",label:"模具及加工成品限樣建立📃"}],
   P11:[{id:"p11a",roles:["design","pm"],label:"召開試產說明會"},
        {id:"p11b",roles:["design","pm"],label:"小批量試產與驗證"},
-       {id:"p11c",role:"pm",   label:"資料點交"}],
+       {id:"p11c",role:"pm",   label:"資料點交📃"}],
 };
 
 /* 20 palette */
