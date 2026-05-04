@@ -340,6 +340,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check-compat.js"></script>
 </head>
 <body>
 
@@ -3119,6 +3120,8 @@ const _fbConfig = {
   appId:             "1:131096813184:web:280a90c8af2d4ebdf79065"
 };
 firebase.initializeApp(_fbConfig);
+const appCheck = firebase.appCheck();
+appCheck.activate('6LeBT9gsAAAAADoh_U2GcyzhLNtsuAGDBMIR8v3y', true);
 const _db  = firebase.database();
 const _ref = _db.ref("rdTracker");
 
