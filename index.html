@@ -2989,7 +2989,7 @@ function showAddRow(projId, phaseId, containerId, delivId){
     <div class="tp-cell col-person">
       <input id="${uid}-person" placeholder="責任人" style="width:100%">
     </div>
-    <div class="tp-cell col-due"><input id="${uid}-due" placeholder="4/30" style="width:100%"></div>
+    <div class="tp-cell col-due"><input id="${uid}-due" placeholder="${(()=>{const d=new Date();return (d.getMonth()+1)+'/'+(d.getDate());})()" style="width:100%"></div>
     <div class="tp-cell col-status" style="display:flex;flex-direction:column;gap:4px">
       <button class="btn-ok" style="width:100%" onclick="confirmAdd('${projId}','${phaseId}','${uid}','${containerId}','${delivId||""}')">✓ 確認新增</button>
       <button class="btn-cxl" style="width:100%" onclick="document.getElementById('${containerId}').innerHTML=''">取消</button>
