@@ -3126,6 +3126,9 @@ const appCheck = firebase.appCheck();
 appCheck.activate('6LeBT9gsAAAAADoh_U2GcyzhLNtsuAGDBMIR8v3y', true);
 const _auth = firebase.auth();
 const _provider = new firebase.auth.GoogleAuthProvider();
+_provider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 function signIn(){
   _auth.signInWithPopup(_provider).catch(e=>toast("登入失敗："+e.message));
@@ -3137,10 +3140,15 @@ function signOut(){
 _auth.onAuthStateChanged(user=>{
   const btn = document.getElementById("btn-login");
   if(!btn) return;
-  if(user && user.email === "hlcorp.ai.999@gmail.com"){
-    btn.textContent = "👤 "+user.displayName;
-    btn.onclick = signOut;
-    btn.style.cssText = "background:var(--green-bg);color:var(--green-tx);border-color:var(--green-bd)";
+if (user) {
+    if (user.email === "hlcorp.ai.999@gmail.com") {
+      btn.textContent = "👤 " + user.displayName;
+      btn.onclick = signOut;
+      btn.style.cssText = "background:var(--green-bg);color:var(--green-tx);border-color:var(--green-bd)";
+    } else {
+      toast("錯誤：此帳號無編輯權限");
+      _auth.signOut();
+    }
   } else {
     btn.textContent = "🔑 登入以編輯";
     btn.onclick = signIn;
