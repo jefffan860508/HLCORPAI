@@ -1343,8 +1343,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
             </select>
           </div>
         </div><button class="btn-add-task" style="padding-left:20px;font-size:11px;color:var(--tx3)" onclick="showAddRow(&#39;GX5&#39;,&#39;P11&#39;,&#39;new-GX5-P11-p11c&#39;,&#39;p11c&#39;)">＋ 新增 資料點交 作業</button>
-            <div id="new-GX5-P11-p11c"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2)">
-    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px"></div>
+            <div id="new-GX5-P11-p11c"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)">
+    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)" style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▲</span></div>
     <div style="padding:6px 8px;font-size:10px;color:var(--tx3);line-height:1.6">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span style="display:inline-flex;align-items:center;gap:3px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0"></span>設計</span>
@@ -2322,8 +2322,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
             </select>
           </div>
         </div><button class="btn-add-task" style="padding-left:20px;font-size:11px;color:var(--tx3)" onclick="showAddRow(&#39;EX&#39;,&#39;P11&#39;,&#39;new-EX-P11-p11c&#39;,&#39;p11c&#39;)">＋ 新增 資料點交 作業</button>
-            <div id="new-EX-P11-p11c"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2)">
-    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px"></div>
+            <div id="new-EX-P11-p11c"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)">
+    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)" style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▲</span></div>
     <div style="padding:6px 8px;font-size:10px;color:var(--tx3);line-height:1.6">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span style="display:inline-flex;align-items:center;gap:3px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0"></span>設計</span>
@@ -2926,8 +2926,8 @@ function renderProjContent(proj, ci){
   });
 
   /* Role legend at bottom of left panel */
-  h+=`<div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2)">
-    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px"></div>
+  h+=`<div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)">
+    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)" style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▲</span></div>
     <div style="padding:6px 8px;font-size:10px;color:var(--tx3);line-height:1.6">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span style="display:inline-flex;align-items:center;gap:3px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0"></span>設計</span>
