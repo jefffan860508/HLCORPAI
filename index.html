@@ -3041,7 +3041,7 @@ function addPerson(btn,taskId){
   const inp=document.createElement("input");
   inp.className="pinp";inp.placeholder="姓名";
   inp.onkeydown=e=>{
-    if(e.key==="Enter"){const n=inp.value.trim();if(n){const t=TASKS.find(x=>x.id===taskId);if(t)t.persons.push(n);}renderAll();}
+    if(e.key==="Enter"){const n=inp.value.trim();if(n){const t=TASKS.find(x=>x.id===taskId);if(t)t.persons.push(n);_push();}renderAll();}
     if(e.key==="Escape")renderAll();
   };
   btn.replaceWith(inp);inp.focus();
