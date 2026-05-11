@@ -3142,7 +3142,7 @@ _auth.onAuthStateChanged(user=>{
   if(!btn) return;
 if (user) {
     if (user.email === "hlcorp.ai.999@gmail.com") {
-      btn.textContent = "👤 " + user.displayName;
+      btn.textContent = user.displayName;
       btn.onclick = signOut;
       btn.style.cssText = "background:var(--green-bg);color:var(--green-tx);border-color:var(--green-bd)";
     } else {
