@@ -2982,6 +2982,8 @@ function showAddRow(projId, phaseId, containerId, delivId){
   const c=document.getElementById(containerId);
   if(!c)return;
   if(c.innerHTML.trim()){c.innerHTML = "";c.style.display = "none";return;}
+  const now = new Date();
+  const todayStr = `${now.getMonth() + 1}/${now.getDate()}`;
   const uid=`nr-${projId}-${phaseId}-${delivId||"gen"}`;
   c.innerHTML=`<div class="new-task-row" id="${uid}" style="display: flex; align-items: center;">
     <div class="tp-cell col-task"><input id="${uid}-task" placeholder="作業內容…" autocomplete="off"></div>
@@ -2989,7 +2991,7 @@ function showAddRow(projId, phaseId, containerId, delivId){
     <div class="tp-cell col-person">
       <input id="${uid}-person" placeholder="責任人" style="width:100%">
     </div>
-    <div class="tp-cell col-due"><input id="${uid}-due" placeholder="4/30" style="width:100%"></div>
+    <div class="tp-cell col-due"><input id="${uid}-due" placeholder="${todayStr}" style="width:100%"></div>
     <div class="tp-cell col-status" style="display:flex;flex-direction:column;gap:4px">
       <button class="btn-ok" style="width:100%" onclick="confirmAdd('${projId}','${phaseId}','${uid}','${containerId}','${delivId||""}')">✓ 確認新增</button>
       <button class="btn-cxl" style="width:100%" onclick="document.getElementById('${containerId}').innerHTML=''">取消</button>
