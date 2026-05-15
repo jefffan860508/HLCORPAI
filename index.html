@@ -83,7 +83,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .section-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
 
 /* ─── Project accordion ─── */
-.proj-wrap{border-top:1px solid var(--bd);overflow:hidden}
+.proj-wrap{border-top:1px solid var(--bd)}
 .proj-wrap:first-child{border-top:none}
 .proj-hd{
   display:flex;align-items:center;gap:10px;padding:9px 16px;
@@ -2949,8 +2949,8 @@ function renderProjContent(proj, ci){
   });
 
   /* Role legend at bottom of left panel */
-  h+=`<div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)">
-    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)" style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▴</span></div>
+  h+=`<div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="toggleProj(this)">
+    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▴</span></div>
     <div style="padding:6px 8px;font-size:10px;color:var(--tx3);line-height:1.6">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span style="display:inline-flex;align-items:center;gap:3px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0"></span>設計</span>
@@ -3082,53 +3082,79 @@ function saveProjName(el,projId){
 }
 
 /* ─── accordion ─── */
-function _smoothCollapse(body, open){
-  if(open){
-    /* 1. 先讓元素進入 DOM 流（但從高度0開始） */
-    body.style.display    = 'block';
-    body.style.overflow   = 'hidden';
-    body.style.maxHeight  = '0';
-    body.style.transition = 'none';
-    /* 2. 量真實高度（此時 display:block，可以正確量到） */
-    const h = body.scrollHeight;
-    /* 3. 下一幀才啟動動畫，避免瀏覽器把步驟1和2合併 */
-    requestAnimationFrame(()=>{
-      body.style.transition = 'max-height .32s cubic-bezier(.4,0,.2,1)';
-      body.style.maxHeight  = h + 'px';
-      body.addEventListener('transitionend', ()=>{
-        /* 動畫結束：清除 inline style，CSS class 繼續負責後續狀態 */
-        body.style.maxHeight  = '';
-        body.style.overflow   = '';
-        body.style.transition = '';
-      }, {once: true});
-    });
-  } else {
-    /* 收合：先固定當前高度，再動畫到0，結束後讓 CSS display:none 接管 */
-    body.style.overflow   = 'hidden';
-    body.style.maxHeight  = body.scrollHeight + 'px';
-    body.style.transition = 'none';
-    requestAnimationFrame(()=>{
-      body.style.transition = 'max-height .24s cubic-bezier(.4,0,.2,1)';
-      body.style.maxHeight  = '0';
-      body.addEventListener('transitionend', ()=>{
-        body.style.display    = '';
-        body.style.maxHeight  = '';
-        body.style.overflow   = '';
-        body.style.transition = '';
-      }, {once: true});
-    });
-  }
-}
 function toggleSection(hd){
   const wrap   = hd.closest('.section-wrap');
   const body   = wrap.querySelector('.section-body');
   const closing = !wrap.classList.contains('closed');
   if(closing){
+    /* 先量高度，再加 closed（否則 display:none 讓高度變0） */
+    const h = body.scrollHeight;
     wrap.classList.add('closed');
-    _smoothCollapse(body, false);
+    body.style.display    = 'block';
+    body.style.overflow   = 'hidden';
+    body.style.maxHeight  = h + 'px';
+    body.style.transition = 'none';
+    void body.offsetHeight;
+    body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1)';
+    body.style.maxHeight  = '0';
+    body.addEventListener('transitionend', ()=>{
+      body.style.display    = '';
+      body.style.maxHeight  = '';
+      body.style.overflow   = '';
+      body.style.transition = '';
+    }, {once: true});
   } else {
     wrap.classList.remove('closed');
-    _smoothCollapse(body, true);
+    body.style.display    = 'block';
+    body.style.overflow   = 'hidden';
+    body.style.maxHeight  = '0';
+    body.style.transition = 'none';
+    void body.offsetHeight;
+    const h = body.scrollHeight;
+    body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1)';
+    body.style.maxHeight  = h + 'px';
+    body.addEventListener('transitionend', ()=>{
+      body.style.maxHeight  = '';
+      body.style.overflow   = '';
+      body.style.transition = '';
+    }, {once: true});
+  }
+}
+function toggleProj(el){
+  const wrap   = el.closest('.proj-wrap');
+  const body   = wrap.querySelector('.proj-body');
+  const closing = !wrap.classList.contains('closed');
+  if(closing){
+    const h = body.scrollHeight;
+    wrap.classList.add('closed');
+    body.style.display    = 'block';
+    body.style.overflow   = 'hidden';
+    body.style.maxHeight  = h + 'px';
+    body.style.transition = 'none';
+    void body.offsetHeight;
+    body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1)';
+    body.style.maxHeight  = '0';
+    body.addEventListener('transitionend', ()=>{
+      body.style.display    = '';
+      body.style.maxHeight  = '';
+      body.style.overflow   = '';
+      body.style.transition = '';
+    }, {once: true});
+  } else {
+    wrap.classList.remove('closed');
+    body.style.display    = 'block';
+    body.style.overflow   = 'hidden';
+    body.style.maxHeight  = '0';
+    body.style.transition = 'none';
+    void body.offsetHeight;
+    const h = body.scrollHeight;
+    body.style.transition = 'max-height .35s cubic-bezier(.4,0,.2,1)';
+    body.style.maxHeight  = h + 'px';
+    body.addEventListener('transitionend', ()=>{
+      body.style.maxHeight  = '';
+      body.style.overflow   = '';
+      body.style.transition = '';
+    }, {once: true});
   }
 }
 function deleteProject(id, name){
@@ -3145,19 +3171,6 @@ function deleteProject(id, name){
   };
   modal.style.display = "flex";
 }
-function toggleProj(hd){
-  const wrap   = hd.closest('.proj-wrap');
-  const body   = wrap.querySelector('.proj-body');
-  const closing = !wrap.classList.contains('closed');
-  if(closing){
-    wrap.classList.add('closed');
-    _smoothCollapse(body, false);
-  } else {
-    wrap.classList.remove('closed');
-    _smoothCollapse(body, true);
-  }
-}
-
 /* ─── scroll ─── */
 function scrollToPhase(id){
   const el=document.getElementById(id);
