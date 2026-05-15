@@ -76,8 +76,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .section-hd:hover{background:var(--sur3)}
 .section-hd .s-chevron{font-size:12px;color:var(--tx3);transition:transform .2s}
 .section-wrap.closed .s-chevron{transform:rotate(-90deg)}
-.section-body{display:block}
-.section-wrap.closed .section-body{display:none}
+.section-body{display:block;overflow:hidden}
+.section-wrap.closed .section-body{max-height:0!important;overflow:hidden}
 .section-icon{width:22px;height:22px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .section-title{font-size:14px;font-weight:700}
 .section-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
@@ -92,8 +92,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .proj-hd:hover{background:#fafaf8}
 .proj-hd .p-chevron{font-size:11px;color:var(--tx3);transition:transform .2s}
 .proj-wrap.closed .p-chevron{transform:rotate(-90deg)}
-.proj-body{display:block}
-.proj-wrap.closed .proj-body{display:none}
+.proj-body{display:block;overflow:hidden}
+.proj-wrap.closed .proj-body{max-height:0!important;overflow:hidden}
 .proj-color-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .proj-name-ed{font-size:14px;font-weight:600;cursor:text;padding:1px 4px;border-radius:3px}
 .proj-stats{font-size:11px;color:var(--tx3);display:flex;gap:10px}
@@ -337,6 +337,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .cswatch:hover{transform:scale(1.2)}
 .cswatch.sel{border-color:#1c1c1a;transform:scale(1.2)}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px}
+
+/* ─── Sync dot breathing animation ─── */
+@keyframes sync-pulse {
+  0%,100%{box-shadow:0 0 0 0 currentColor;opacity:1}
+  50%{box-shadow:0 0 0 4px transparent;opacity:.7}
+}
+@keyframes sync-pulse-slow {
+  0%,100%{box-shadow:0 0 0 0 currentColor;opacity:1}
+  50%{box-shadow:0 0 0 5px transparent;opacity:.5}
+}
+#sync-dot{transition:background .4s;border-radius:50%}
+#sync-dot.breathing{animation:sync-pulse 1.2s ease-in-out infinite}
+#sync-dot.breathing-slow{animation:sync-pulse-slow 2.4s ease-in-out infinite}
 
 /* Toast */
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
@@ -3069,7 +3082,43 @@ function saveProjName(el,projId){
 }
 
 /* ─── accordion ─── */
-function toggleSection(hd){hd.closest(".section-wrap").classList.toggle("closed")}
+function _smoothCollapse(body, open){
+  /* Always display:block — CSS max-height:0 handles visual hiding */
+  body.style.display = 'block';
+  if(open){
+    /* Measure real height first (element is visible, just max-height:0 from CSS) */
+    const h = body.scrollHeight;
+    body.style.transition = 'max-height .3s cubic-bezier(.4,0,.2,1)';
+    body.style.maxHeight  = h + 'px';
+    body.addEventListener('transitionend', ()=>{
+      /* Remove inline max-height so content can grow freely later */
+      body.style.maxHeight  = '';
+      body.style.transition = '';
+    }, {once:true});
+  } else {
+    /* Snap to current height, then animate to 0 */
+    body.style.maxHeight  = body.scrollHeight + 'px';
+    body.style.transition = '';
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        body.style.transition = 'max-height .3s cubic-bezier(.4,0,.2,1)';
+        body.style.maxHeight  = '0';
+      });
+    });
+  }
+}
+function toggleSection(hd){
+  const wrap   = hd.closest('.section-wrap');
+  const body   = wrap.querySelector('.section-body');
+  const closing = !wrap.classList.contains('closed');
+  if(closing){
+    wrap.classList.add('closed');
+    _smoothCollapse(body, false);
+  } else {
+    wrap.classList.remove('closed');
+    _smoothCollapse(body, true);
+  }
+}
 function deleteProject(id, name){
   const modal = document.getElementById("modal-del-proj");
   document.getElementById("modal-del-msg").textContent = `確定要刪除專案「${name}」嗎？刪除後無法復原，該專案所有任務也會一併移除。`;
@@ -3084,7 +3133,18 @@ function deleteProject(id, name){
   };
   modal.style.display = "flex";
 }
-function toggleProj(hd){hd.closest(".proj-wrap").classList.toggle("closed")}
+function toggleProj(hd){
+  const wrap   = hd.closest('.proj-wrap');
+  const body   = wrap.querySelector('.proj-body');
+  const closing = !wrap.classList.contains('closed');
+  if(closing){
+    wrap.classList.add('closed');
+    _smoothCollapse(body, false);
+  } else {
+    wrap.classList.remove('closed');
+    _smoothCollapse(body, true);
+  }
+}
 
 /* ─── scroll ─── */
 function scrollToPhase(id){
@@ -3180,14 +3240,25 @@ function _syncDot(state){
   const dot  = document.getElementById("sync-dot");
   const txt  = document.getElementById("sync-text");
   if(!dot) return;
+  /* color / label / breathing */
   const map = {
-    loading: ["#bbb",    "連線中…"],
-    saving:  ["#e8b040", "儲存中…"],
-    ok:      ["#3aaa88", "已同步"],
-    offline: ["#d94f4f", "離線"],
+    loading: ["#aaaaaa", "連線中…",  true  ],
+    saving:  ["#e8b040", "儲存中…",  true  ],
+    ok:      ["#3aaa88", "已同步",   'slow'],
+    offline: ["#d94f4f", "離線",     true  ],
   };
-  const [color, label] = map[state] || ["#bbb",""];
+  const [color, label, pulse] = map[state] || ["#aaa","",false];
   dot.style.background = color;
+  dot.style.color      = color;   /* currentColor for box-shadow */
+  if(pulse === 'slow'){
+    dot.classList.remove("breathing");
+    dot.classList.add("breathing-slow");
+  } else if(pulse){
+    dot.classList.remove("breathing-slow");
+    dot.classList.add("breathing");
+  } else {
+    dot.classList.remove("breathing","breathing-slow");
+  }
   if(txt) txt.textContent = label;
 }
 
