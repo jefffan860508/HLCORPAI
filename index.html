@@ -58,8 +58,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .c-green{color:#3AAA88}.c-amber{color:#E8B040}.c-red{color:#e5484d}.c-gray{color:var(--gray-tx)}
 .filter-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .filter-bar select,.filter-bar input{
-  font-family:var(--font);font-size:13px;height:30px;padding:0 8px;
-  border:1px solid var(--bd2);border-radius: 99px;background:var(--bg);color:var(--tx);outline:none}
+  font-family:var(--font);font-size:13px;height:30px;padding:0 28px 0 12px;
+  border:1px solid var(--bd2);border-radius:99px;background:var(--bg);color:var(--tx);outline:none;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 14 14'%3E%3Cpath d='M2 5l5 5 5-5' stroke='%239a9a94' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center}
+.filter-bar input{padding:0 12px;background-image:none}
 .filter-bar select:focus,.filter-bar input:focus{border-color:var(--acc)}
 .filter-bar input{flex:1;min-width:130px}
 .btn-clr{font-family:var(--font);font-size:12px;padding:4px 10px;border-radius: 99px;
@@ -74,8 +78,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
   background:var(--sur2);cursor:pointer;user-select:none;border-bottom:1px solid var(--bd)
 }
 .section-hd:hover{background:var(--sur3)}
-.section-hd .s-chevron{font-size:12px;color:var(--tx3);transition:transform .2s}
-.section-wrap.closed .s-chevron{transform:rotate(-90deg)}
+.section-hd .s-chevron{
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  color:var(--tx3);flex-shrink:0;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+.section-wrap.closed .s-chevron{transform:rotate(180deg)}
+.proj-hd .p-chevron{
+  width:18px;height:18px;display:flex;align-items:center;justify-content:center;
+  color:var(--tx3);flex-shrink:0;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+.proj-wrap.closed .p-chevron{transform:rotate(180deg)}
 .section-body{display:block;overflow:hidden}
 .section-wrap.closed .section-body{display:none}
 .section-icon{width:22px;height:22px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -90,8 +104,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
   cursor:pointer;user-select:none;background:var(--sur)
 }
 .proj-hd:hover{background:#fafaf8}
-.proj-hd .p-chevron{font-size:11px;color:var(--tx3);transition:transform .2s}
-.proj-wrap.closed .p-chevron{transform:rotate(-90deg)}
 .proj-body{display:block;overflow:hidden}
 .proj-wrap.closed .proj-body{display:none}
 .proj-color-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -236,15 +248,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 
 /* Status select */
 .ssel{
-  font-family:var(--font);font-size:12px;padding:4px 6px;width:100%;
-  border:1px solid var(--bd2);border-radius: 99px;
-  background:var(--sur);color:var(--tx);cursor:pointer;outline:none
+  font-family:var(--font);font-size:12px;padding:4px 24px 4px 10px;width:100%;
+  border:1px solid var(--bd2);border-radius:99px;
+  background:var(--sur);color:var(--tx);cursor:pointer;outline:none;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14'%3E%3Cpath d='M2 5l5 5 5-5' stroke='%239a9a94' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center
 }
 .ssel:focus{border-color:var(--acc)}
-.ss-todo {background:var(--gray-bg); color:var(--gray-tx);border-color:var(--gray-bd)}
-.ss-wip  {background:var(--amber-bg);color:var(--amber-tx);border-color:var(--amber-bd)}
-.ss-delay{background:var(--red-bg);  color:var(--red-tx);  border-color:var(--red-bd)}
-.ss-done {background:var(--green-bg);color:var(--green-tx);border-color:var(--green-bd)}
+.ss-todo {background-color:var(--gray-bg); color:var(--gray-tx);border-color:var(--gray-bd)}
+.ss-wip  {background-color:var(--amber-bg);color:var(--amber-tx);border-color:var(--amber-bd)}
+.ss-delay{background-color:var(--red-bg);  color:var(--red-tx);  border-color:var(--red-bd)}
+.ss-done {background-color:var(--green-bg);color:var(--green-tx);border-color:var(--green-bd)}
 
 /* Deliverable status select (in task panel, hidden normally, shown in edit) */
 .dsel{
@@ -419,7 +434,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
       <span class="section-title">事務性作業</span>
       <span class="section-badge" style="background:var(--red-bg);color:var(--red-tx)">1 項延誤</span>
       <span style="font-size:11px;color:var(--tx3);margin-left:4px">5/9 完成</span>
-      <span class="s-chevron">▾</span>
+      <span class="s-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </div>
     <div class="section-body">
       <div style="overflow-x:auto">
@@ -619,7 +634,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
         <svg width="13" height="13" fill="none" stroke="var(--blue-tx)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
       </div>
       <span class="section-title">開發專案</span>
-      <span class="s-chevron">▾</span>
+      <span class="s-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </div>
     <div class="section-body"><div class="proj-wrap " data-pid="GX5">
       <div class="proj-hd" onclick="toggleProj(this)">
@@ -629,7 +644,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
           
           <span>4/9 完成</span>
         </div>
-        <span class="p-chevron">▾</span>
+        <span class="p-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </div>
       <div class="proj-body">
         <div class="proj-content">
@@ -1361,8 +1376,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
             </select>
           </div>
         </div><button class="btn-add-task" style="padding-left:20px;font-size:11px;color:var(--tx3)" onclick="showAddRow(&#39;GX5&#39;,&#39;P12&#39;,&#39;new-GX5-P12-p12a&#39;,&#39;p12a&#39;)">＋ 新增 量產樣品交付 作業</button>
-            <div id="new-GX5-P12-p12a"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)">
-    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)" style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▴</span></div>
+            <div id="new-GX5-P12-p12a"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="toggleProj(this)">
+    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span class="p-chevron" style="color:var(--tx3)" title="收折專案"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <div style="padding:6px 8px;font-size:10px;color:var(--tx3);line-height:1.6">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span style="display:inline-flex;align-items:center;gap:3px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0"></span>設計</span>
@@ -1381,7 +1396,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
           <span style="color:var(--red-tx);font-weight:600">3 延誤</span>
           <span>10/20 完成</span>
         </div>
-        <span class="p-chevron">▾</span>
+        <span class="p-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </div>
       <div class="proj-body">
         <div class="proj-content">
@@ -2333,8 +2348,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
             </select>
           </div>
         </div><button class="btn-add-task" style="padding-left:20px;font-size:11px;color:var(--tx3)" onclick="showAddRow(&#39;EX&#39;,&#39;P12&#39;,&#39;new-EX-P12-p12a&#39;,&#39;p12a&#39;)">＋ 新增 量產樣品交付 作業</button>
-            <div id="new-EX-P12-p12a"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)">
-    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span onclick="(function(el){const w=el.closest('.proj-wrap');if(w)w.classList.add('closed');})(this)" style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▴</span></div>
+            <div id="new-EX-P12-p12a"></div></div></div></div><div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="toggleProj(this)">
+    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span class="p-chevron" style="color:var(--tx3)" title="收折專案"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <div style="padding:6px 8px;font-size:10px;color:var(--tx3);line-height:1.6">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span style="display:inline-flex;align-items:center;gap:3px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0"></span>設計</span>
@@ -2801,7 +2816,7 @@ function renderAll(){
       <span class="section-title">事務性作業</span>
       ${adminDelay>0?`<span class="section-badge" style="background:var(--red-bg);color:var(--red-tx)">${adminDelay} 項延誤</span>`:""}
       <span style="font-size:11px;color:var(--tx3);margin-left:4px">${adminDone}/${adminAll.length} 完成</span>
-      <span class="s-chevron">▾</span>
+      <span class="s-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </div>
     <div class="section-body">
       ${renderAdminTable(adminTasks)}
@@ -2816,7 +2831,7 @@ function renderAll(){
         <svg width="13" height="13" fill="none" stroke="var(--blue-tx)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       </div>
       <span class="section-title">開發專案</span>
-      <span class="s-chevron">▾</span>
+      <span class="s-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     </div>
     <div class="section-body">`;
 
@@ -2840,7 +2855,7 @@ function renderAll(){
           ${pDelay>0?`<span style="color:var(--red-tx);font-weight:600">${pDelay} 延誤</span>`:""}
           <span>${pDone}/${pTasks.length} 完成</span>
         </div>
-        <span class="p-chevron">▾</span>
+        <span class="p-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <button class="btn-del-proj" onclick="event.stopPropagation();deleteProject('${proj.id}','${proj.name}')" title="刪除專案">✕</button>
       </div>
       <div class="proj-body">
@@ -2950,7 +2965,7 @@ function renderProjContent(proj, ci){
 
   /* Role legend at bottom of left panel */
   h+=`<div style="display:flex;background:var(--sur2);border-top:1px solid var(--bd2);cursor:pointer" onclick="toggleProj(this)">
-    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span style="cursor:pointer;font-size:13px;color:var(--tx3);user-select:none" title="收折專案">▴</span></div>
+    <div style="width:185px;border-right:1px solid var(--bd);padding:6px 8px;display:flex;align-items:center;justify-content:flex-start"><span class="p-chevron" style="color:var(--tx3)" title="收折專案"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     <div style="padding:6px 8px;font-size:10px;color:var(--tx3);line-height:1.6">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <span style="display:inline-flex;align-items:center;gap:3px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0"></span>設計</span>
