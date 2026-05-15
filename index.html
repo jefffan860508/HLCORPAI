@@ -68,7 +68,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 
 /* ─── ROW 3+: Section accordion ─── */
 #row-sections{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
-.section-wrap{border:1px solid var(--bd2);border-radius:var(--rl);overflow: visible;background:var(--sur);overflow: hidden;}
+.section-wrap{border:1px solid var(--bd2);border-radius:var(--rl);overflow:hidden;background:var(--sur)}
 .section-hd{
   display:flex;align-items:center;gap:10px;padding:10px 16px;
   background:var(--sur2);cursor:pointer;user-select:none;border-bottom:1px solid var(--bd)
@@ -77,7 +77,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .section-hd .s-chevron{font-size:12px;color:var(--tx3);transition:transform .2s}
 .section-wrap.closed .s-chevron{transform:rotate(-90deg)}
 .section-body{display:block;overflow:hidden}
-.section-wrap.closed .section-body{max-height:0!important;overflow:hidden}
+.section-wrap.closed .section-body{display:none}
 .section-icon{width:22px;height:22px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .section-title{font-size:14px;font-weight:700}
 .section-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
@@ -93,7 +93,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px
 .proj-hd .p-chevron{font-size:11px;color:var(--tx3);transition:transform .2s}
 .proj-wrap.closed .p-chevron{transform:rotate(-90deg)}
 .proj-body{display:block;overflow:hidden}
-.proj-wrap.closed .proj-body{max-height:0!important;overflow:hidden}
+.proj-wrap.closed .proj-body{display:none}
 .proj-color-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .proj-name-ed{font-size:14px;font-weight:600;cursor:text;padding:1px 4px;border-radius:3px}
 .proj-stats{font-size:11px;color:var(--tx3);display:flex;gap:10px}
@@ -3083,27 +3083,39 @@ function saveProjName(el,projId){
 
 /* ─── accordion ─── */
 function _smoothCollapse(body, open){
-  /* Always display:block — CSS max-height:0 handles visual hiding */
-  body.style.display = 'block';
   if(open){
-    /* Measure real height first (element is visible, just max-height:0 from CSS) */
+    /* 1. 先讓元素進入 DOM 流（但從高度0開始） */
+    body.style.display    = 'block';
+    body.style.overflow   = 'hidden';
+    body.style.maxHeight  = '0';
+    body.style.transition = 'none';
+    /* 2. 量真實高度（此時 display:block，可以正確量到） */
     const h = body.scrollHeight;
-    body.style.transition = 'max-height .3s cubic-bezier(.4,0,.2,1)';
-    body.style.maxHeight  = h + 'px';
-    body.addEventListener('transitionend', ()=>{
-      /* Remove inline max-height so content can grow freely later */
-      body.style.maxHeight  = '';
-      body.style.transition = '';
-    }, {once:true});
-  } else {
-    /* Snap to current height, then animate to 0 */
-    body.style.maxHeight  = body.scrollHeight + 'px';
-    body.style.transition = '';
+    /* 3. 下一幀才啟動動畫，避免瀏覽器把步驟1和2合併 */
     requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        body.style.transition = 'max-height .3s cubic-bezier(.4,0,.2,1)';
-        body.style.maxHeight  = '0';
-      });
+      body.style.transition = 'max-height .32s cubic-bezier(.4,0,.2,1)';
+      body.style.maxHeight  = h + 'px';
+      body.addEventListener('transitionend', ()=>{
+        /* 動畫結束：清除 inline style，CSS class 繼續負責後續狀態 */
+        body.style.maxHeight  = '';
+        body.style.overflow   = '';
+        body.style.transition = '';
+      }, {once: true});
+    });
+  } else {
+    /* 收合：先固定當前高度，再動畫到0，結束後讓 CSS display:none 接管 */
+    body.style.overflow   = 'hidden';
+    body.style.maxHeight  = body.scrollHeight + 'px';
+    body.style.transition = 'none';
+    requestAnimationFrame(()=>{
+      body.style.transition = 'max-height .24s cubic-bezier(.4,0,.2,1)';
+      body.style.maxHeight  = '0';
+      body.addEventListener('transitionend', ()=>{
+        body.style.display    = '';
+        body.style.maxHeight  = '';
+        body.style.overflow   = '';
+        body.style.transition = '';
+      }, {once: true});
     });
   }
 }
